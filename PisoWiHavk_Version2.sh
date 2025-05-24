@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/bash
+#!/usr/bin/env bash
 # PisoWiHavk - Developed by Tidegliders
 # Real Deployment Edition: Includes deep HTTP fuzzing, ARP scan, MAC spoofing (if root), extended logging, and more.
 
@@ -35,12 +35,9 @@ EOF
 # ========= DEPENDENCY SETUP =========
 REQUIRED_PKGS="nmap curl jq termux-api netcat ipcalc coreutils grep sed awk tsu arp-scan macchanger hydra"
 install_pkg() {
-    for PKG in $REQUIRED_PKGS; do
-        if ! command -v "$PKG" >/dev/null 2>&1; then
-            echo -e "${YELLOW}[INFO] Installing missing package: $PKG${NC}"
-            pkg install -y "$PKG"
-        fi
-    done
+    echo -e "${YELLOW}[INFO] Installing missing packages: $REQUIRED_PKGS${NC}"
+    pkg install -y $REQUIRED_PKGS
+
     # Install python3 for HTTP fuzzing module if not present
     if ! command -v python3 >/dev/null 2>&1; then
         pkg install -y python
