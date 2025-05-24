@@ -45,6 +45,46 @@ install_pkg() {
     pip install --upgrade requests >/dev/null 2>&1
 }
 
+check_and_install_pkg() {
+    echo -e "${YELLOW}[INFO] Checking for required packages...${NC}"
+    for pkg in $REQUIRED_PKGS; do
+        if ! command -v $pkg >/dev/null 2>&1; then
+            echo -e "${YELLOW}[INFO] Package $pkg is not installed. Installing...${NC}"
+            if ! pkg install -y $pkg; then
+                echo -e "${RED}[ERROR] Failed to install package $pkg. Please check your internet connection and try again.${NC}"
+                exit 1
+            fi
+            echo -e "${GREEN}[SUCCESS] Package $pkg installed successfully.${NC}"
+        else
+            echo -e "${GREEN}[INFO] Package $pkg is already installed.${NC}"
+        fi
+    done
+
+    # Install python3 for HTTP fuzzing module if not present
+    if ! command -v python3 >/dev/null 2>&1; then
+        echo -e "${YELLOW}[INFO] Python3 is not installed. Installing...${NC}"
+        if ! pkg install -y python; then
+            echo -e "${RED}[ERROR] Failed to install Python3. Please check your internet connection and try again.${NC}"
+            exit 1
+        fi
+        echo -e "${GREEN}[SUCCESS] Python3 installed successfully.${NC}"
+    else
+        echo -e "${GREEN}[INFO] Python3 is already installed.${NC}"
+    fi
+
+    # Install requests library for HTTP fuzzing module
+    if ! pip show requests >/dev/null 2>&1; then
+        echo -e "${YELLOW}[INFO] Requests library is not installed. Installing...${NC}"
+        if ! pip install --upgrade requests >/dev/null 2>&1; then
+            echo -e "${RED}[ERROR] Failed to install requests library. Please check your internet connection and try again.${NC}"
+            exit 1
+        fi
+        echo -e "${GREEN}[SUCCESS] Requests library installed successfully.${NC}"
+    else
+        echo -e "${GREEN}[INFO] Requests library is already installed.${NC}"
+    fi
+}
+
 # ========= LOGGING & UTILITIES =========
 log() {
     local msg="[$(date '+%Y-%m-%d %H:%M:%S')] $*"
@@ -454,7 +494,7 @@ cleanup() {
 trap cleanup EXIT
 banner
 echo -e "${YELLOW}[*] Checking and installing dependencies...${NC}"
-install_pkg
+check_and_install_pkg
 log "[INFO] $SCRIPT_NAME v$VERSION started"
 pause
 main_menu
