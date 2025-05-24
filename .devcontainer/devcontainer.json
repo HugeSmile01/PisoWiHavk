@@ -1,0 +1,7 @@
+{
+  "tasks": {
+    "build": "chmod +x PisoWiHavk_Version2.sh && ./PisoWiHavk_Version2.sh",
+    "test": "./PisoWiHavk_Version2.sh",
+    "launch": "./PisoWiHavk_Version2.sh"
+  }
+}
